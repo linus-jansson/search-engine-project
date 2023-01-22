@@ -19,7 +19,7 @@ export default function handler(
 
     let data = {
         title: 'Hello World',
-        summary: 'This is a summary',
+        summary: 'This is a summary Lorem ipsum dolor sit amet, consectetur adipisicing elit. Culpa porro expedita qui dolorem pariatur maxime iste atque dolore nam ad',
         url: 'https://www.google.com',
         date: new Date()
     }
