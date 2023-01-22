@@ -29,7 +29,7 @@ export default async function SearchPage({ searchParams }: { [key: string]: stri
                     <SearchField />
 
                 </div>
-                <div id="search-results">
+                <div id="search-results" className='ml-4 mt-4'>
                     {searchResults.map((data: unknown, idx: number) => <ResultCard key={idx} {...data} />)}
                 </div>
             </div>
