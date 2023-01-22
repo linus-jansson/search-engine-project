@@ -28,7 +28,7 @@ export default function handler(
 
     let output = []
 
-    for (let i = 0; i < 10; i++) output.push(data);
+    for (let i = 0; i < 50; i++) output.push(data);
 
     res.status(200).json(output)
 }
