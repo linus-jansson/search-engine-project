@@ -1,4 +1,5 @@
 
+import NoResults from '../components/result/NoResults';
 import ResultCard from '../components/result/ResultCard';
 import SearchField from '../components/search/SearchField';
 
@@ -30,6 +31,7 @@ export default async function SearchPage({ searchParams }: { [key: string]: stri
 
                 </div>
                 <div id="search-results" className='ml-4 mt-4'>
+                    <NoResults query={searchParams.query} />
                     {searchResults.map((data: unknown, idx: number) => <ResultCard key={idx} {...data} />)}
                 </div>
             </div>
