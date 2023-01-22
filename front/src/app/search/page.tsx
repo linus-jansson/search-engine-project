@@ -20,8 +20,10 @@ export default async function SearchPage({ searchParams }: { [key: string]: stri
                 <SearchField currentQuery={searchQuery} />
             </div>
             <div id="search-results" className='ml-4 mt-4'>
+                {/* TODO: In future if no results show no results found */}
+                {/* {searchResults.length === 0 && <NoResults query={searchQuery} />} */}
                 <NoResults query={searchQuery} />
-                {searchResults.map((data: unknown, idx: number) => <ResultCard key={idx} {...data} />)}
+                {searchResults && searchResults.map((data: unknown, idx: number) => <ResultCard key={idx} {...data} />)}
             </div>
         </div>
     )
