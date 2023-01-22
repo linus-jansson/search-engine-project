@@ -13,6 +13,7 @@ export default function SearchField() {
         console.log(inputFieldValue)
     }
 
+
     return (
         <input type="text" onKeyDown={handleSearch} className="border-2 shadow-lg w-96 h-12 focus:outline-none p-2 text-lg bg-neutral-600 rounded-xl" />
     )
