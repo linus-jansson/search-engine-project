@@ -1,4 +1,4 @@
 CREATE TABLE page (
-  url TEXT NOT NULL primary key,
+  url TEXT NOT NULL PRIMARY KEY,
   fetch_time TIMESTAMP NOT NULL
 );
