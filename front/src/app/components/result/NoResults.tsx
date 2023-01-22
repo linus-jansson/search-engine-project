@@ -3,7 +3,7 @@ import Link from 'next/link';
 export default function NoResults({ query }: { query: string }) {
 
     return (
-        <div className='flex flex-col'>
+        <div className='flex flex-col w-96'>
             <h1 className="text-3xl font-bold mb-3">No results found for "{query}"</h1>
             <p>Would you like to search using <span className='font-bold'>DuckDuckGo</span> instead?</p>
             <div className='mt-2'>
