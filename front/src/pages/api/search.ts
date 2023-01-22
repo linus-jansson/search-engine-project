@@ -17,6 +17,8 @@ export default function handler(
             This will in the future call the external API that gets the data from the database
     */
 
+    let query = req.query.q // query from the search bar
+
     let data = {
         title: 'Hello World',
         summary: 'This is a summary Lorem ipsum dolor sit amet, consectetur adipisicing elit. Culpa porro expedita qui dolorem pariatur maxime iste atque dolore nam ad',
