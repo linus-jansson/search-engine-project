@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 body {
-    @apply bg-neutral-900;
+    @apply bg-zinc-800;
 }
 
 h1,
@@ -13,5 +13,5 @@ p,
 a,
 span,
 input {
-    @apply text-neutral-200;
+    @apply text-zinc-200;
 }
