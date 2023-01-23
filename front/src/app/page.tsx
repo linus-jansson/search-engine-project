@@ -5,7 +5,7 @@ export default function Home() {
         <>
             <div className="grid place-content-center h-screen text-center">
                 <h1 className="text-3xl font-bold mb-3">Search stuff</h1>
-                <SearchField />
+                <SearchField currentQuery={undefined} />
             </div >
         </>
     )
