@@ -9,8 +9,8 @@ export default function SearchPage({ searchParams }: { [key: string]: string | s
 
     return (
         <div>
-            <div id="top-bar" className='w-screen shadow-3xl bg-neutral-900 flex flex-col p-4 items-center md:flex-row'>
-                <Link href='/' className="text-3xl font-bold mr-6">Search stuff</Link>
+            <div id="top-bar" className='flex flex-col items-center w-screen p-4 shadow-3xl bg-neutral-900 md:flex-row'>
+                <Link href='/' className="mr-6 text-3xl font-bold">Search stuff</Link>
                 <SearchField currentQuery={searchQuery} />
             </div>
 
