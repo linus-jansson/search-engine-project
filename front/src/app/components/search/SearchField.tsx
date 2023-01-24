@@ -1,6 +1,5 @@
 "use client"
 import { useRouter } from "next/navigation";
-import Router from "next/router";
 import { useRef } from "react";
 
 export default function SearchField({ currentQuery }: { currentQuery: string | undefined }) {
