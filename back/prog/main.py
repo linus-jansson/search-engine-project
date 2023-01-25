@@ -21,6 +21,10 @@ def getSearchResults():
 def saveURL():
     pass
 
+@app.route('/api/testScraperURL')
+def testPageScraper():
+    pass
+
 if __name__ == '__main__':
     shouldRunDebug = "debug" in sys.argv
     app.run(debug=shouldRunDebug)
