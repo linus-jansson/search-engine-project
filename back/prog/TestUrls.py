@@ -103,5 +103,7 @@ URLS = [
     'http://www.foxnews.com/',
     'http://europe.wsj.com/',
     'http://some-made-up-domain.com/',
-    'https://example.com/'
+    'https://example.com/',
+    'https://www.stackoverflow.com/',
+    'https://stackoverflow.com/questions/2691178/how-to-make-a-div-center-align-in-html'
 ]
