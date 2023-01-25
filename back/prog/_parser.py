@@ -95,17 +95,20 @@ class Page:
 
     def __init__(self, url, data):
         soupData = bs4(data, 'html.parser')
+
         self.url = url
         self.__data = data
-
-        og = OpenGraph(html=self.__data)
-        if og.is_valid():
-            self.pageTitle = og.title
-            self.pageText = og.description
-            self.pageType = og.type
-        else:
-            self.pageTitle = soupData.title.string
-            self.pageText = soupData.get_text().replace("\n","").strip()
+        try:
+            og = OpenGraph(html=self.__data)
+            if og.is_valid():
+                self.pageTitle = og.title
+                self.pageText = og.description
+                self.pageType = og.type
+            else:
+                self.pageTitle = soupData.title.string
+                self.pageText = soupData.get_text().replace("\n","").strip()
+        except Exception as exc:
+                print('%r generated an exception: %s' % (self.url, exc))
 
         self.currentDateEpoch = int(time.time())
 
