@@ -36,8 +36,8 @@ def scrapeURLS(listOfUrls: list, timeout=60, maxWorkers=10) :
             url = future_to_url[future]
             try:
                 data = future.result()
-                parser.testParseWebpageContent(url, data) ## saves data to file
-                yield url, future.result()
+                
+                yield url, data
             except Exception as exc:
                 print('%r generated an exception: %s' % (url, exc))
                 URLerrors += 1
@@ -46,12 +46,11 @@ def scrapeURLS(listOfUrls: list, timeout=60, maxWorkers=10) :
 
         print(f"URLs tested: {len(URLS)} URL errors: {str(URLerrors)}/{len(URLS)}")
 
-
-
 def main():
     pages = []
     for url, data in scrapeURLS(URLS, 60, 20):
         page = parser.Page(url, data)
+        page.debugSavePageToFile()
         print("adding ", page.pageTitle)
         pages.append(page)
     
