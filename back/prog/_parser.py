@@ -127,8 +127,8 @@ class Page:
     def savePage(self,url, data):
         pass
         # Check if website folder exists
-        if not Path("websites").exists():
-            Path("websites").mkdir()
+        if not Path(".websites").exists():
+            Path(".websites").mkdir()
         
         # get number of files in websites folder
         num_files = len([f for f in Path("websites").iterdir() if f.is_file()])
@@ -136,7 +136,7 @@ class Page:
         newPage = Page(url, data)
         # Saves data to file
         try:
-            with open(f"websites/pages.html", "a+", encoding="utf-8") as f:
+            with open(f".websites/pages.html", "a+", encoding="utf-8") as f:
                 f.write(newPage.__str__())
         except Exception as exc:
             print("Error saving file")
