@@ -19,10 +19,9 @@ export default async function SearchResults({ query }: { query: string }) {
 
     return (
         <div id="search-results" className='mt-4 ml-4'>
-            {/* TODO: In future if no results show no results found */}
-            {/* {searchResults.length === 0 && <NoResults query={searchQuery} />} */}
             {searchResults && <span>Found {searchResults.length} results</span>}
-            <NoResults query={query} />
+
+            {searchResults.length === 0 && <NoResults query={query} />}
             {searchResults && searchResults.map((data: any, idx: number) => <ResultCard key={idx} {...data} />)}
             {/* TODO: add pagnition for large amounts of results */}
             <ShowMore query={query} />
