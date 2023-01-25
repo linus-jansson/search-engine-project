@@ -4,25 +4,15 @@ from flask import Flask, jsonify, request
 
 app = Flask(__name__)
 
-@app.route('/')
-def API_test():
-    output = {
-        'test': 3
-    }
-
-    return jsonify(output)
-
-
-@app.route('/api/getURLMatches')
-def getSearchResults():
+@app.route('/api/search', methods=['POST'])
+def search():
+    # Match the search term to the database
+    # Handle Results
+    # If results older than 30 days; re-scrape url?
     pass
 
-@app.route('/api/saveURL')
-def saveURL():
-    pass
-
-@app.route('/api/getURLData')
-def testPageScraper(url=None):
+@app.route('/api/URL/')
+def testGetPage():
     import scraper
     import _parser as parser
     # get url from body from request
@@ -38,6 +28,19 @@ def testPageScraper(url=None):
         output_data.append(new_page.pageObject)
 
     return jsonify(output_data), 200
+
+@app.route('/api/URL/save', methods=['POST'])
+def savePage():
+    # Get URL/s from body of request
+    # Parse URL/s
+    # Save to database
+    pass
+
+@app.route('/api/URL/delete', methods=['DELETE'])
+def removePage():
+    # Get URL/s from body of request
+    # Delete from database
+    pass
 
 if __name__ == '__main__':
     shouldRunDebug = "debug" in sys.argv
