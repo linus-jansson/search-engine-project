@@ -2,6 +2,7 @@ import Link from 'next/link';
 
 import SearchField from '../components/search/SearchField';
 import SearchResults from '../components/result/SearchResults';
+import ScrollTop from '../components/ScrollTop'
 
 export default function SearchPage({ searchParams }: { [key: string]: string | string[] | undefined }) {
     if (searchParams === undefined || !searchParams.hasOwnProperty("q")) return <div>Search params are undefined</div>;
@@ -17,6 +18,7 @@ export default function SearchPage({ searchParams }: { [key: string]: string | s
             {/* https://github.com/vercel/next.js/issues/42292 */}
             {/* @ts-expect-error Server Component */}
             <SearchResults query={searchQuery} />
+            <ScrollTop />
         </div>
     )
 }
