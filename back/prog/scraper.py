@@ -4,7 +4,7 @@
 import concurrent.futures
 import urllib.request
 
-import parser
+import _parser as parser
 from fake_useragent import UserAgent
 
 from TestUrls import URLS
@@ -29,7 +29,9 @@ def scrapeURLS(listOfUrls: list, timeout=60, maxWorkers=10) :
     # We can use a with statement to ensure threads are cleaned up promptly
     with concurrent.futures.ThreadPoolExecutor(max_workers=maxWorkers) as executor:
         # Start the load operations and mark each future with its URL
-        future_to_url = {executor.submit(load_url, url, timeout): url for url in listOfUrls}
+        future_to_url = {
+            executor.submit(load_url, url, timeout): url for url in listOfUrls
+        }
         for future in concurrent.futures.as_completed(future_to_url):
             url = future_to_url[future]
             try:
