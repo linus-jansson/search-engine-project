@@ -89,9 +89,7 @@ class Page:
     ogLocale = None
     def __init__(self, url, data):
         self.document = bs4(data, 'html.parser')
-
         self.url = url
-        
         self.__data = data
 
         try:
@@ -113,10 +111,7 @@ class Page:
 
             # Get all words using __data spliting it into a list of words
             _pagetext = self.document.get_text()
-            #/(\r\n|\r|\n|\t)/
-            # re.compile(r"[A-Za-z]+|[^A-Za-z ]", documentText)
             self.words = re.sub(r"[^\w]", ' ', _pagetext).split()
-            # self.words = self.document.get_text().strip().replace("\n", " ").lower().split(" ")
 
             # Save words, url etc to database if needed
             self.debugSavePageToFile()
