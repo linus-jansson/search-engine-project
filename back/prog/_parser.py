@@ -3,127 +3,135 @@ from bs4 import BeautifulSoup as bs4
 import time
 import re
 
-class OpenGraph(dict):
-    """
-    """
-
-    required_attrs = ['title', 'type', 'image', 'url', 'description']
-
-    def __init__(self, html=None, scrape=False, **kwargs):
-        # If scrape == True, then will try to fetch missing attribtues
-        # from the page's body
-
-        self.scrape = scrape
-
-        for k in kwargs.keys():
-            self[k] = kwargs[k]
-
-        dict.__init__(self)
-
-        if html is not None:
-            self.parser(html)
-
-    def __setattr__(self, name, val):
-        self[name] = val
-
-    def __getattr__(self, name):
-        return self[name]
-
-    def parser(self, html):
+class OpenGraph:
+    def __init__(self, html):
+        self.document = bs4(html, 'html.parser')
+    
+    def usesOpenGraph(self):
+        """Check if page uses Open Graph
+        TODO: check if correct regex before using method
         """
+        print("WARNING: usesOpenGraph() is not tested yet")
+        if self.document.findAll("meta", property=re.compile("^og:.*$")):
+            return True
+        return False
+
+
+    @property
+    def url(self):
+        """Return the Open Graph site name
         """
-        if not isinstance(html,bs4):
-            doc = bs4(html)
-        else:
-            doc = html
-        ogs = doc.html.head.findAll(property=re.compile(r'^og'))
-        for og in ogs:
-            if og.has_attr(u'content'):
-                self[og[u'property'][3:]]=og[u'content']
-        # Couldn't fetch all attrs from og tags, try scraping body
-        if not self.is_valid() and self.scrape:
-            for attr in self.required_attrs:
-                if not self.valid_attr(attr):
-                    try:
-                        self[attr] = getattr(self, 'scrape_%s' % attr)(doc)
-                    except AttributeError:
-                        pass
 
-    def valid_attr(self, attr):
-        return self.get(attr) and len(self[attr]) > 0
+        if self.document.findAll("meta", property="og:url"):
+            return self.document.find("meta", property="og:url")["content"]
+        
+        return None
 
-    def is_valid(self):
-        return all([self.valid_attr(attr) for attr in self.required_attrs])
+    @property
+    def image(self):
+        """Return the Open Graph site name """
 
-    def to_html(self):
-        if not self.is_valid():
-            return u"<meta property=\"og:error\" content=\"og metadata is not valid\" />"
+        if self.document.findAll("meta", property="og:image"):
+            return self.document.find("meta", property="og:image")["content"]
+        
+        return None
 
-        meta = u""
-        for key,value in self.iteritems():
-            meta += u"\n<meta property=\"og:%s\" content=\"%s\" />" %(key, value)
-        meta += u"\n"
+    @property
+    def site_name(self):
+        """Return the Open Graph site name"""
 
-        return meta
+        if self.document.findAll("meta", property="og:site_name"):
+            return self.document.find("meta", property="og:site_name")["content"]
+        return None
 
-    def scrape_image(self, doc):
-        images = [dict(img.attrs)['src']
-            for img in doc.html.body.findAll('img')]
+    @property
+    def description(self):
+        """Return the Open Graph description"""
 
-        if images:
-            return images[0]
+        if self.document.findAll("meta", property="og:description"):
+            return self.document.find("meta", property="og:description")["content"]
 
-        return u''
+        return None
 
-    def scrape_title(self, doc):
-        return doc.html.head.title.text
+    @property
+    def locale(self):
+        """Return the Open Graph locale
+        """
 
-    def scrape_type(self, doc):
-        return 'other'
+        if self.document.findAll("meta", property="og:locale"):
+            return self.document.find("meta", property="og:locale")["content"]
+        
+        return None
 
-    def scrape_description(self, doc):
-        tag = doc.html.head.findAll('meta', attrs={"name":"description"})
-        result = "".join([t['content'] for t in tag])
-        return result
+    @property
+    def title(self):
+        """Return the Open Graph title
+        """
+
+        if self.document.findAll("meta", property="og:title"):
+            return self.document.find("meta", property="og:title")["content"]
+        
+        return None
+
 
 class Page:
     url = None
-    pageTitle = None
-    pageText = None
-    pageType = None
-    currentDateEpoch = None
+    title = None
+    words = []
+    currentDateEpoch = int(time.time())
 
+    # Open Graph: https://ogp.me/
+    ogTitle = None
+    ogType = None
+    ogImage = None
+    ogUrl = None
+    ogDescription = None
+    ogLocale = None
     def __init__(self, url, data):
-        soupData = bs4(data, 'html.parser')
+        self.document = bs4(data, 'html.parser')
 
         self.url = url
+        
         self.__data = data
+
         try:
+            # Check if page has meta tags or opengraph tags
             og = OpenGraph(html=self.__data)
-            if og.is_valid():
-                self.pageTitle = og.title
-                self.pageText = og.description
-                self.pageType = og.type
+            self.ogTitle = og.title
+            # self.ogType = og.type
+            self.ogImage = og.image
+            self.ogUrl = og.url
+            self.ogDescription = og.description
+            self.ogLocale = og.locale
+
+            # Get page title
+            if self.ogTitle: 
+                self.pageTitle = self.ogTitle
             else:
-                self.pageTitle = soupData.title.string
-                self.pageText = soupData.get_text().replace("\n","").strip()
+                self.pageTitle = self.document.title.string
+
+            # Get all words using __data spliting it into a list of words
+            self.words = self.document.get_text().strip().split(" ")
+
+            # Save words, url etc to database if needed
+            self.debugSavePageToFile()
+
         except Exception as exc:
                 print('%r generated an exception: %s' % (self.url, exc))
+                raise exc
 
-        self.currentDateEpoch = int(time.time())
-
-    def usesOpenGraph(self) -> bool:
-        pass
-
-    def __str__(self):
-        return f"{'#'*50}\nURL: {self.url}\nTitle: {self.pageTitle}\nPageContent: {self.pageText}\nDate: {self.currentDateEpoch}\n{'#'*50}\n\n"
-    
     @property
     def pageObject(self):
         return {
             "url": self.url,
-            "title": self.pageTitle,
-            "content": self.pageText,
+            "title": self.title,
+            "content": self.words,
+            "ogTitle": self.ogTitle,
+            "ogType": self.ogType,
+            "ogImage": self.ogImage,
+            "ogUrl": self.ogUrl,
+            "ogDescription": self.ogDescription,
+            "ogLocale": self.ogLocale,
             "praseDate": self.currentDateEpoch
         }
     
