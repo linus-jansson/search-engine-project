@@ -50,8 +50,7 @@ def main():
     pages = []
     for url, data in scrapeURLS(URLS, 60, 20):
         page = parser.Page(url, data)
-        page.debugSavePageToFile()
-        print("adding ", page.pageTitle)
+        print("adding ", page.title)
         pages.append(page)
     
     print(f"Pages scraped successfully: {len(pages)}")
