@@ -104,10 +104,10 @@ class Page:
 
             # Get page title
             if self.ogTitle: 
-                self.pageTitle = self.ogTitle
+                self.title = self.ogTitle
             else:
                 if self.document.find("title"):
-                    self.pageTitle = self.document.find("title").string
+                    self.title = self.document.find("title").string
 
             # Get all words using __data spliting it into a list of words
             _pagetext = self.document.get_text()
