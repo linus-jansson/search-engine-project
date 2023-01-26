@@ -108,16 +108,21 @@ class Page:
             if self.ogTitle: 
                 self.pageTitle = self.ogTitle
             else:
-                self.pageTitle = self.document.title.string
+                if self.document.find("title"):
+                    self.pageTitle = self.document.find("title").string
 
             # Get all words using __data spliting it into a list of words
-            self.words = self.document.get_text().strip().split(" ")
+            _pagetext = self.document.get_text()
+            #/(\r\n|\r|\n|\t)/
+            # re.compile(r"[A-Za-z]+|[^A-Za-z ]", documentText)
+            self.words = re.sub(r"[^\w]", ' ', _pagetext).split()
+            # self.words = self.document.get_text().strip().replace("\n", " ").lower().split(" ")
 
             # Save words, url etc to database if needed
             self.debugSavePageToFile()
 
         except Exception as exc:
-                print('%r generated an exception: %s' % (self.url, exc))
+                print('%r in _parser generated an exception: %s' % (self.url, exc))
                 raise exc
 
     @property
@@ -136,15 +141,14 @@ class Page:
         }
     
     def debugSavePageToFile(self):
-        pass
         # Check if website folder exists
         if not Path(".websites").exists():
             Path(".websites").mkdir()
 
         # Saves data to file
         try:
-            with open(f".websites/pages.html", "a+", encoding="utf-8") as f:
-                f.write(self.__str__())
+            with open(f".websites/pages.txt", "a+", encoding="utf-8") as f:
+                f.write(str(self.pageObject) + "\n")
         except Exception as exc:
             print("Error saving file")
             print('%r generated an exception: %s' % (self.url, exc))
