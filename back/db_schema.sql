@@ -1,23 +1,25 @@
+
+CREATE TABLE IF NOT EXISTS words (
+  id INTEGER NOT NULL PRIMARY KEY,
+  word TEXT NOT NULL
+);
+
 -- Add Open Graph data if exist
-CREATE TABLE IF NOT EXISTS pages (
-  url TEXT NOT NULL PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS parsedPages (
+  id INTEGER NOT NULL PRIMARY KEY,
+  url TEXT NOT NULL,
   title TEXT NOT NULL, -- title of page
   fetch_time TIMESTAMP NOT NULL -- Date page was last indexed
 );
 
-CREATE TABLE IF NOT EXISTS wordsInTable {
-    id INT NOT NULL PRIMARY KEY,
-    url TEXT NOT NULL,
-    word TEXT NOT NULL,
-    FOREIGN KEY(url) REFERENCES pages(url),
-    FOREIGN KEY(word) REFERENCES words(word)
-};
-
-CREATE TABLE IF NOT EXISTS words {
-    word TEXT NOT NULL PRIMARY KEY,
-};
-
 -- Maybe not needed (Only if server get unexpected error causing programing to crash)
 CREATE TABLE IF NOT EXISTS notParsedPages (
-    url TEXT NOT NULL PRIMARY KEY,
+  id INTEGER NOT NULL PRIMARY KEY,
+  url TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS words_urls (
+  word_id INTEGER NOT NULL CONSTRAINT words_urls_word_id_fk REFERENCES words(id),
+  url_id INTEGER NOT NULL CONSTRAINT words_urls_url_id_fk REFERENCES parsedPages(id),
+  CONSTRAINT words_urls_word_id_uq UNIQUE (word_id, url_id)
 );
