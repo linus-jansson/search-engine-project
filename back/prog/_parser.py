@@ -3,13 +3,14 @@ from bs4 import BeautifulSoup as bs4
 import time
 import re
 
+
 class OpenGraph(dict):
     """
     """
 
     required_attrs = ['title', 'type', 'image', 'url', 'description']
 
-    def __init__(self, html=None, scrape=False, **kwargs):
+    def __init__(self, html=None, scrape=True, **kwargs):
         # If scrape == True, then will try to fetch missing attribtues
         # from the page's body
 
@@ -27,25 +28,42 @@ class OpenGraph(dict):
         self[name] = val
 
     def __getattr__(self, name):
+        print(self)
         return self[name]
 
     def parser(self, html):
         """
         """
-        if not isinstance(html,bs4):
-            doc = bs4(html)
-        else:
-            doc = html
-        ogs = doc.html.head.findAll(property=re.compile(r'^og'))
+        # Scrape style <style>(.+?)<\/style>
+        # Scrape script <script>(.+?)<\/script>
+        # https://stackoverflow.com/questions/66749253/how-to-scrape-all-website-text-from-a-page-and-every-one-click-subpage-with-scra
+        # https://github.com/miso-belica/sumy
+        html = str(html, 'utf-8')
+        html = re.sub(r'<style>(.+?)<\/style>', '', html)
+        html = re.sub(r'<script>(.+?)<\/script>', '', html)
+        document = bs4(html, "html.parser")
+
+        print(document)
+
+        ogs = document.findAll(property=re.compile(r'.og'))
+        # regex that matches all og tags
+        # <meta property=\"(og:.+?)\" content=\"(.+?)\" \/>
+        # DEBUG check if found any og tags in html using regex
+
+        print("opengraphs:", ogs)
+
         for og in ogs:
             if og.has_attr(u'content'):
-                self[og[u'property'][3:]]=og[u'content']
+                self[og[u'property'][3:]] = og[u'content']
+
         # Couldn't fetch all attrs from og tags, try scraping body
         if not self.is_valid() and self.scrape:
+            print("Page is not valid")
             for attr in self.required_attrs:
                 if not self.valid_attr(attr):
                     try:
-                        self[attr] = getattr(self, 'scrape_%s' % attr)(doc)
+                        self[attr] = getattr(
+                            self, 'scrape_%s' % attr)(document)
                     except AttributeError:
                         pass
 
@@ -55,20 +73,24 @@ class OpenGraph(dict):
     def is_valid(self):
         return all([self.valid_attr(attr) for attr in self.required_attrs])
 
-    def to_html(self):
-        if not self.is_valid():
-            return u"<meta property=\"og:error\" content=\"og metadata is not valid\" />"
+    # def to_html(self):
+    #     if not self.is_valid():
+    #         return u"<meta property=\"og:error\" content=\"og metadata is not valid\" />"
 
-        meta = u""
-        for key,value in self.iteritems():
-            meta += u"\n<meta property=\"og:%s\" content=\"%s\" />" %(key, value)
-        meta += u"\n"
+    #     meta = u""
+    #     for key, value in self.iteritems():
+    #         meta += u"\n<meta property=\"og:%s\" content=\"%s\" />" % (
+    #             key, value)
+    #     meta += u"\n"
 
-        return meta
+    #     return meta
+
+    def scrape_url(self, doc):
+        return doc.url
 
     def scrape_image(self, doc):
         images = [dict(img.attrs)['src']
-            for img in doc.html.body.findAll('img')]
+                  for img in doc.html.body.findAll('img')]
 
         if images:
             return images[0]
@@ -82,9 +104,11 @@ class OpenGraph(dict):
         return 'other'
 
     def scrape_description(self, doc):
-        tag = doc.html.head.findAll('meta', attrs={"name":"description"})
+        tag = doc.html.head.findAll('meta', attrs={"name": "description"})
+
         result = "".join([t['content'] for t in tag])
         return result
+
 
 class Page:
     url = None
@@ -100,15 +124,14 @@ class Page:
         self.__data = data
         try:
             og = OpenGraph(html=self.__data)
-            if og.is_valid():
-                self.pageTitle = og.title
-                self.pageText = og.description
-                self.pageType = og.type
-            else:
-                self.pageTitle = soupData.title.string
-                self.pageText = soupData.get_text().replace("\n","").strip()
+            # self.pageTitle = og.title
+            # self.pageText = og.description
+            #     self.pageType = og.type
+            #     self.pageTitle = soupData.title.string
+            #     self.pageText = soupData.get_text().replace("\n", "").strip()
         except Exception as exc:
-                print('%r generated an exception: %s' % (self.url, exc))
+            raise exc
+            print('%r generated an exception: %s' % (self.url, exc))
 
         self.currentDateEpoch = int(time.time())
 
@@ -117,7 +140,7 @@ class Page:
 
     def __str__(self):
         return f"{'#'*50}\nURL: {self.url}\nTitle: {self.pageTitle}\nPageContent: {self.pageText}\nDate: {self.currentDateEpoch}\n{'#'*50}\n\n"
-    
+
     @property
     def pageObject(self):
         return {
@@ -126,7 +149,7 @@ class Page:
             "content": self.pageText,
             "praseDate": self.currentDateEpoch
         }
-    
+
     def debugSavePageToFile(self):
         pass
         # Check if website folder exists
@@ -140,4 +163,3 @@ class Page:
         except Exception as exc:
             print("Error saving file")
             print('%r generated an exception: %s' % (self.url, exc))
-
