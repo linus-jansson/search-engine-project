@@ -3,6 +3,7 @@ import sys
 from fastapi import FastAPI, Request
 from pydantic import BaseModel, create_model
 
+# Running app: uvicorn main:app --reload
 app = FastAPI()
 
 
