@@ -55,6 +55,14 @@ class Database():
             raise Exception(
                 "Error: Unable to execute queries (rolling back): %s" % exc.message)
 
+    @property
+    def last_insert_id(self):
+        result = self.connection.execute(
+            "SELECT last_insert_rowid()").fetchone()
+        if result:
+            return result[0]
+        return None
+
     def addURL(self, url):
         pass
 
