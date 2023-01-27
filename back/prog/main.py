@@ -1,25 +1,27 @@
 
 import sys
-from flask import Flask, jsonify, request
+from fastapi import FastAPI, Request
+from pydantic import BaseModel, create_model
 
-app = Flask(__name__)
+app = FastAPI()
 
-@app.route('/api/search', methods=['POST'])
+
+@app.post('/api/search')
 def search():
     # Match the search term to the database
     # Handle Results
     # If results older than 30 days; re-scrape url?
     pass
 
-@app.route('/api/URL/')
-def testGetPage():
+
+@app.get('/api/URL/')
+def testGetPage(q: str = None):
     import scraper
     import _parser as parser
     # get url from body from request
-    url = request.args.get('q')
+    url = q
     if url is None:
-        return jsonify({'error': 'No URL provided'}), 400
-    print(url)
+        return {'error': 'No URL provided'}, 400
 
     url_list = url.split(',')
     output_data = []
@@ -27,20 +29,23 @@ def testGetPage():
         new_page = parser.Page(url, data)
         output_data.append(new_page.pageObject)
 
-    return jsonify(output_data), 200
+    return output_data, 200
 
-@app.route('/api/URL/save', methods=['POST'])
+
+@app.post('/api/URL/save')
 def savePage():
     # Get URL/s from body of request
     # Parse URL/s
     # Save to database
     pass
 
-@app.route('/api/URL/delete', methods=['DELETE'])
+
+@app.delete('/api/URL/delete')
 def removePage():
     # Get URL/s from body of request
     # Delete from database
     pass
+
 
 if __name__ == '__main__':
     shouldRunDebug = "debug" in sys.argv
