@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS words (
 );
 
 -- Add Open Graph data if exist
-CREATE TABLE IF NOT EXISTS parsedPages (
+CREATE TABLE IF NOT EXISTS pages (
   id INTEGER NOT NULL PRIMARY KEY,
   url TEXT NOT NULL,
   title TEXT NOT NULL, -- title of page
@@ -19,6 +19,6 @@ CREATE TABLE IF NOT EXISTS notParsedPages (
 
 CREATE TABLE IF NOT EXISTS words_urls (
   word_id INTEGER NOT NULL CONSTRAINT words_urls_word_id_fk REFERENCES words(id),
-  url_id INTEGER NOT NULL CONSTRAINT words_urls_url_id_fk REFERENCES parsedPages(id),
+  url_id INTEGER NOT NULL CONSTRAINT words_urls_url_id_fk REFERENCES pages(id),
   CONSTRAINT words_urls_word_id_uq UNIQUE (word_id, url_id)
 );

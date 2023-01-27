@@ -47,6 +47,8 @@ class Database():
         self.connection.commit()
         # ...
 
+    def addPage(self, url, page):
+
 
 if __name__ == "__main__":
     db = Database()

@@ -17,8 +17,7 @@ def search():
 
 @app.get('/api/URL/')
 def testGetPage(q: str = None):
-    import scraper
-    import _parser as parser
+    import crawler as scraper
     # get url from body from request
     url = q
     if url is None:
@@ -27,7 +26,7 @@ def testGetPage(q: str = None):
     url_list = url.split(',')
     output_data = []
     for url, data in scraper.scrapeURLS(url_list, 60, 20):
-        new_page = parser.Page(url, data)
+        new_page = scraper.Page(url, data)
         output_data.append(new_page.pageObject)
 
     return output_data, 200

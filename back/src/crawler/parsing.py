@@ -3,10 +3,11 @@ from bs4 import BeautifulSoup as bs4
 import time
 import re
 
+
 class OpenGraph:
     def __init__(self, html):
         self.document = bs4(html, 'html.parser')
-    
+
     def usesOpenGraph(self):
         """Check if page uses Open Graph
         TODO: check if correct regex before using method
@@ -16,7 +17,6 @@ class OpenGraph:
             return True
         return False
 
-
     @property
     def url(self):
         """Return the Open Graph site name
@@ -24,7 +24,7 @@ class OpenGraph:
 
         if self.document.findAll("meta", property="og:url"):
             return self.document.find("meta", property="og:url")["content"]
-        
+
         return None
 
     @property
@@ -33,7 +33,7 @@ class OpenGraph:
 
         if self.document.findAll("meta", property="og:image"):
             return self.document.find("meta", property="og:image")["content"]
-        
+
         return None
 
     @property
@@ -60,7 +60,7 @@ class OpenGraph:
 
         if self.document.findAll("meta", property="og:locale"):
             return self.document.find("meta", property="og:locale")["content"]
-        
+
         return None
 
     @property
@@ -70,7 +70,7 @@ class OpenGraph:
 
         if self.document.findAll("meta", property="og:title"):
             return self.document.find("meta", property="og:title")["content"]
-        
+
         return None
 
 
@@ -87,6 +87,7 @@ class Page:
     ogUrl = None
     ogDescription = None
     ogLocale = None
+
     def __init__(self, url, data):
         self.document = bs4(data, 'html.parser')
         self.url = url
@@ -103,7 +104,7 @@ class Page:
             self.ogLocale = og.locale
 
             # Get page title
-            if self.ogTitle: 
+            if self.ogTitle:
                 self.title = self.ogTitle
             else:
                 if self.document.find("title"):
@@ -113,12 +114,12 @@ class Page:
             _pagetext = self.document.get_text()
             self.words = re.sub(r"[^\w]", ' ', _pagetext).split()
 
-            # Save words, url etc to database if needed
-            self.debugSavePageToFile()
+            # self.debugSavePageToFile()
 
         except Exception as exc:
-                print('%r in _parser generated an exception: %s' % (self.url, exc))
-                raise exc
+            print('%r in parser.py generated an exception: %s' %
+                  (self.url, exc))
+            raise exc
 
     @property
     def pageObject(self):
@@ -134,7 +135,7 @@ class Page:
             "ogLocale": self.ogLocale,
             "praseDate": self.currentDateEpoch
         }
-    
+
     def debugSavePageToFile(self):
         # Check if website folder exists
         if not Path(".websites").exists():
@@ -147,4 +148,3 @@ class Page:
         except Exception as exc:
             print("Error saving file")
             print('%r generated an exception: %s' % (self.url, exc))
-
