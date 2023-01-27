@@ -30,9 +30,9 @@ class Database():
 
         self.executeQueries(queries)
 
-    def executeQueries(self, queries: list[list[str, str]]):
+    def executeQueries(self, queries: list[list[str, str]] = None):
         """
-        Executes a list of queries
+        Executes a list of queries with optional parameters
         :param queries: List of queries to execute [[query, parameters], [query, parameters], ...]
         """
         self.connection.isolation_level = None
@@ -40,7 +40,6 @@ class Database():
         cursor.execute("BEGIN")
         try:
             # Todo: if a tuple of query, parameter is passed execute it and commit
-
             for querySet in queries:
                 query = querySet[0]
                 if len(querySet) > 1:
@@ -68,13 +67,18 @@ class Database():
 
     def addPage(self, url, page):
         """Example code"""
-        query = "INSERT INTO pages (url, title, content, ogTitle, ogType, ogImage, ogUrl, ogDescription, ogLocale, praseDate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
-        parameters = (url, page.title, page.words, page.ogTitle, page.ogType,
-                      page.ogImage, page.ogUrl, page.ogDescription, page.ogLocale, page.praseDate)
+        query = "INSERT INTO pages (url, title, ogTitle, ogType, ogImage, ogUrl, ogDescription, ogLocale, praseDate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+        parameters = (url, page.title, page.ogTitle, page.ogType, page.ogImage,
+                      page.ogUrl, page.ogDescription, page.ogLocale, page.praseDate)
+
         self.executeQueries([[query, parameters]])
+        page_id = self.last_insert_id
+
+        self.addWords(page_id, page.words)
+
         """"""
 
-    def addWords(self, words: list):
+    def addWords(self, page_id: int, words: list):
         pass
 
 
