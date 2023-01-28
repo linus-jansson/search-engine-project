@@ -1,3 +1,5 @@
+BEGIN;
+
 CREATE TABLE IF NOT EXISTS words (
   id INTEGER NOT NULL PRIMARY KEY,
   word TEXT NOT NULL
@@ -22,3 +24,5 @@ CREATE TABLE IF NOT EXISTS words_pages (
   page_id INTEGER NOT NULL CONSTRAINT words_pages_page_id_fk REFERENCES pages(id),
   CONSTRAINT words_pages_word_id_uq UNIQUE (word_id, page_id)
 );
+
+COMMIT;
