@@ -78,8 +78,18 @@ class Database():
 
         """"""
 
+    def __addWord(self, page_id: int, word: str):
+        cursor = self.connection.cursor()
+        query = "INSERT OR IGNORE INTO words(word) VALUES(?) RETURNING id"
+        res = cursor.execute(query,(word,))
+        row = res.fetchone()
+        word_id = row[0]
+        query = "INSERT INTO words_pages(word_id,page_id) VALUES(?,?)"
+        cursor.execute(query,(word_id,page_id))
+
     def addWords(self, page_id: int, words: list):
-        pass
+        for word in words:
+            self.__addWord(page_id,word)
 
 
 if __name__ == "__main__":

@@ -17,8 +17,8 @@ CREATE TABLE IF NOT EXISTS notParsedPages (
   url TEXT NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS words_urls (
-  word_id INTEGER NOT NULL CONSTRAINT words_urls_word_id_fk REFERENCES words(id),
-  url_id INTEGER NOT NULL CONSTRAINT words_urls_url_id_fk REFERENCES pages(id),
-  CONSTRAINT words_urls_word_id_uq UNIQUE (word_id, url_id)
+CREATE TABLE IF NOT EXISTS words_pages (
+  word_id INTEGER NOT NULL CONSTRAINT words_pages_word_id_fk REFERENCES words(id),
+  page_id INTEGER NOT NULL CONSTRAINT words_pages_page_id_fk REFERENCES pages(id),
+  CONSTRAINT words_pages_word_id_uq UNIQUE (word_id, page_id)
 );
