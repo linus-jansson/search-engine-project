@@ -16,19 +16,11 @@ class Database():
         self.initTables()
 
     def initTables(self):
-        schemaPath = Path(__file__).parent.absolute()/Path('db_schema.sql')
-
         # If database empty initialize tables
-        queries = []
-        with open(schemaPath, 'r') as f:
-            currentQuery = ""
-            for lines in f.readlines():
-                currentQuery += lines
-                if lines.endswith(";\n"):
-                    queries.append(currentQuery)
-                    currentQuery = ""
-
-        self.executeQueries(queries)
+        schemaPath = Path(__file__).parent.absolute()/'db_schema.sql'
+        with schemaPath.open() as f:
+            cursor = self.connection.cursor()
+            cursor.executescript( f.read() );
 
     def executeQueries(self, queries: list[list[str, str]] = None):
         """
