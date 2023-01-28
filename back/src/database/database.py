@@ -80,12 +80,9 @@ class Database():
 
     def __addWord(self, page_id: int, word: str):
         cursor = self.connection.cursor()
-        query = "INSERT OR IGNORE INTO words(word) VALUES(?) RETURNING id"
-        res = cursor.execute(query,(word,))
+        res = cursor.execute("INSERT OR IGNORE INTO words(word) VALUES(?) RETURNING id",[word])
         row = res.fetchone()
-        word_id = row[0]
-        query = "INSERT INTO words_pages(word_id,page_id) VALUES(?,?)"
-        cursor.execute(query,(word_id,page_id))
+        cursor.execute("INSERT INTO words_pages(word_id,page_id) VALUES(?,?)",(row[0],page_id))
 
     def addWords(self, page_id: int, words: list):
         for word in words:
