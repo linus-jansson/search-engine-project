@@ -72,7 +72,7 @@ class Database():
 
     def addWords(self, page_id: int, words: list):
         cursor = self.connection.cursor()
-        cursor.executemany("INSERT INTO words_pages(word_id,page_id) VALUES((INSERT OR IGNORE INTO words(word) VALUES(?) RETURNING id),?)",
+        cursor.executemany("INSERT OR IGNORE INTO words_pages(word_id,page_id) VALUES((INSERT OR IGNORE INTO words(word) VALUES(?) RETURNING id),?)",
                            [(word,page_id) for word in words])
 
 
