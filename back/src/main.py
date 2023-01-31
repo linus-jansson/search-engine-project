@@ -21,7 +21,7 @@ def testGetPage(q: str = None):
     # get url from body from request
     url = q
     if url is None:
-        return {'error': 'No URL provided'}, 400
+        return {'error': 'No URL provided'}
 
     url_list = url.split(',')
     output_data = []
@@ -29,7 +29,7 @@ def testGetPage(q: str = None):
         new_page = scraper.Page(url, data)
         output_data.append(new_page.pageObject)
 
-    return output_data, 200
+    return output_data
 
 
 @app.post('/api/URL/save')
