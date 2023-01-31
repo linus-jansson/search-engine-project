@@ -76,5 +76,11 @@ class Database():
                            [(word,page_id) for word in words])
 
 
+    def search(self, query: str):
+        # https://www.sqlite.org/fts5.html#the_experimental_trigram_tokenizer
+        cursor = self.connection.cursor()
+        cursor.execute("SELECT * FROM pages WHERE title LIKE ?", (query, ))
+        return cursor.fetchall()
+
 if __name__ == "__main__":
     db = Database()
