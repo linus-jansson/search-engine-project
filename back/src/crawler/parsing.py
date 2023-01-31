@@ -73,13 +73,23 @@ class OpenGraph:
 
         return None
 
+    @property
+    def orgDescription(self):
+        """Return the Open Graph type
+        """
+        
+        if self.document.findAll("meta", {'name':'description'}):
+            return self.document.find("meta", {'name':'description'})["content"]
 
+        
+
+        return None
 class Page:
     url = None
     title = None
-    content = []
-    content_2 = []
-    content_3 = []
+    content_words = []
+    content_sentences = []
+    content_full_text = []
     currentDateEpoch = int(time.time())
 
     # Open Graph: https://ogp.me/
@@ -102,8 +112,8 @@ class Page:
             # self.ogType = og.type
             self.ogImage = og.image
             self.ogUrl = og.url
-            self.ogDescription = og.description
-            self.ogLocale = og.locale
+            self.ogDescription = og.description or og.orgDescription
+            self.ogLocale = og.locale or "en_US"
 
             # Get page title
             if self.ogTitle:
@@ -113,10 +123,9 @@ class Page:
                     self.title = self.document.find("title").string
 
             # Get all words using __data spliting it into a list of words
-            _pagetext = self.document.get_text()
-            self.content = self.parseAsWords(_pagetext)
-            self.content_2 = self.parseAsSentences(_pagetext)
-            self.content_3 = self.parseAsFullText(_pagetext)
+            self.content_words = self.parser(self.document, self.getWords)
+            self.content_sentences = self.parser(self.document, self.getSentences)
+            self.content_full_text = self.parser(self.document, self.getFullText)
 
             # self.debugSavePageToFile()
 
@@ -125,17 +134,33 @@ class Page:
                   (self.url, exc))
             raise exc
 
-    def parseAsWords(self, data):
+    def parser(self, data, nextStep):
+        """Parse page as words
+        """
+
+        for script in data(["script", "style", "title", "noscript"]):
+            script.decompose()
+
+        # data = re.sub(r'<script>[\s\S]*?<\/script>', ' ', data)
+        # data = re.sub(r'<style>[\s\S]*?<\/style>', ' ', data)
+
+        data = ''.join(data.stripped_strings)
+        # data = data.get_text()
+
+        return nextStep(data)
+
+    def getWords(self, data):
         """Parse page as words
         """
         return re.sub(r"[^\w]", ' ', data).split()
 
-    def parseAsSentences(self, data):
+    def getSentences(self, data):
         """Parse page as sentences
         """
-        return re.search(r'(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s', data).groups()
+        # return re.search(r'(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s', data).groups()
+        return []
 
-    def parseAsFullText(self, data):
+    def getFullText(self, data):
         """Parse page as full text
         """
         return data
@@ -145,9 +170,9 @@ class Page:
         return {
             "url": self.url,
             "title": self.title,
-            "content": self.content,
-            "content_2": self.content_2,
-            "content_3": self.content_3,
+            "content_words": self.content_words,
+            "content_sentences": self.content_sentences,
+            "content_full_text": self.content_full_text,
             "ogTitle": self.ogTitle,
             "ogType": self.ogType,
             "ogImage": self.ogImage,

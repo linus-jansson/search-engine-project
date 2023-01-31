@@ -4,7 +4,6 @@
 import concurrent.futures
 import urllib.request
 
-import parsing as parser
 from fake_useragent import UserAgent
 
 from TestUrls import URLS
@@ -51,15 +50,15 @@ def scrapeURLS(listOfUrls: list, timeout=60, maxWorkers=10):
             f"URLs tested: {len(URLS)} URL errors: {str(URLerrors)}/{len(URLS)}")
 
 
-def main():
-    pages = []
-    for url, data in scrapeURLS(URLS, 60, 20):
-        page = parser.Page(url, data)
-        print("adding ", page.title)
-        pages.append(page)
-
-    print(f"Pages scraped successfully: {len(pages)}")
-
-
 if __name__ == "__main__":
+    import parsing as parser
+
+    def main():
+        pages = []
+        for url, data in scrapeURLS(URLS, 60, 20):
+            page = parser.Page(url, data)
+            print("adding ", page.title)
+            pages.append(page)
+
+        print(f"Pages scraped successfully: {len(pages)}")
     main()
