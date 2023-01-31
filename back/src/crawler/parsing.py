@@ -77,7 +77,9 @@ class OpenGraph:
 class Page:
     url = None
     title = None
-    words = []
+    content = []
+    content_2 = []
+    content_3 = []
     currentDateEpoch = int(time.time())
 
     # Open Graph: https://ogp.me/
@@ -112,7 +114,9 @@ class Page:
 
             # Get all words using __data spliting it into a list of words
             _pagetext = self.document.get_text()
-            self.words = re.sub(r"[^\w]", ' ', _pagetext).split()
+            self.content = self.parseAsWords(_pagetext)
+            self.content_2 = self.parseAsSentences(_pagetext)
+            self.content_3 = self.parseAsFullText(_pagetext)
 
             # self.debugSavePageToFile()
 
@@ -121,12 +125,29 @@ class Page:
                   (self.url, exc))
             raise exc
 
+    def parseAsWords(self, data):
+        """Parse page as words
+        """
+        return re.sub(r"[^\w]", ' ', data).split()
+
+    def parseAsSentences(self, data):
+        """Parse page as sentences
+        """
+        return re.search(r'(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s', data).groups()
+
+    def parseAsFullText(self, data):
+        """Parse page as full text
+        """
+        return data
+
     @property
     def pageObject(self):
         return {
             "url": self.url,
             "title": self.title,
-            "content": self.words,
+            "content": self.content,
+            "content_2": self.content_2,
+            "content_3": self.content_3,
             "ogTitle": self.ogTitle,
             "ogType": self.ogType,
             "ogImage": self.ogImage,
